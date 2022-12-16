@@ -267,6 +267,7 @@ Install-ContainerHost
         if (-not $HyperV)
         {
             Write-Output "Enabling Hyper-V containers by default for Client SKU"
+            "Enabling Hyper-V containers by default for Client SKU" | Out-File -Append -FilePath $global:ErrorFile
             $HyperV = $true
         }    
     }
@@ -285,6 +286,7 @@ Install-ContainerHost
         if ($NoRestart)
         {
             Write-Warning "A reboot is required; stopping script execution"
+            "A reboot is required; stopping script execution" | Out-File -Append -FilePath $global:ErrorFile
             exit
         }
 
@@ -307,6 +309,7 @@ Install-ContainerHost
         if ($TransparentNetwork)
         {
             Write-Output "Waiting for Hyper-V Management..."
+            "Waiting for Hyper-V Management..." | Out-File -Append -FilePath $global:ErrorFile
             $networks = $null
 
             try
@@ -323,17 +326,20 @@ Install-ContainerHost
             if ($networks.Count -eq 0)
             {
                 Write-Output "Enabling container networking..."
+                "Enabling container networking..."  | Out-File -Append -FilePath $global:ErrorFile
                 New-ContainerTransparentNetwork
             }
             else
             {
                 Write-Output "Networking is already configured.  Confirming configuration..."
+                "Networking is already configured.  Confirming configuration..."  | Out-File -Append -FilePath $global:ErrorFile
                 
                 $transparentNetwork = $networks |? { $_.Mode -eq "Transparent" }
 
                 if ($transparentNetwork -eq $null)
                 {
                     Write-Output "We didn't find a configured external network; configuring now..."
+                    "We didn't find a configured external network; configuring now..."  | Out-File -Append -FilePath $global:ErrorFile
                     New-ContainerTransparentNetwork
                 }
                 else
@@ -344,6 +350,7 @@ Install-ContainerHost
 
                         if ($netAdapters.Count -eq 0)
                         {
+                            "No adapters found that match the name $ExternalNetAdapter"  | Out-File -Append -FilePath $global:ErrorFile
                             throw "No adapters found that match the name $ExternalNetAdapter"
                         }
 
@@ -352,14 +359,17 @@ Install-ContainerHost
 
                         if ($transparentNetwork -eq $null)
                         {
+                            "One or more external networks are configured, but not on the requested adapter ($ExternalNetAdapter)"  | Out-File -Append -FilePath $global:ErrorFile
                             throw "One or more external networks are configured, but not on the requested adapter ($ExternalNetAdapter)"
                         }
 
                         Write-Output "Configured transparent network found: $($transparentNetwork.Name)"
+                        "Configured transparent network found: $($transparentNetwork.Name)"  | Out-File -Append -FilePath $global:ErrorFile
                     }
                     else
                     {
                         Write-Output "Configured transparent network found: $($transparentNetwork.Name)"
+                        "Configured transparent network found: $($transparentNetwork.Name)"  | Out-File -Append -FilePath $global:ErrorFile
                     }
                 }
             }
@@ -372,6 +382,7 @@ Install-ContainerHost
     if (Test-Docker)
     {
         Write-Output "Docker is already installed."
+        "Docker is already installed."  | Out-File -Append -FilePath $global:ErrorFile
     }
     else
     {
